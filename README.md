@@ -1,3 +1,7 @@
+# About
+
+simple task creator app
+
 # Generic Task Manager
 
 This repository is intended to be a trello clone with limited fuctionality, just to portfolio purposes.
