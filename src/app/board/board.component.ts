@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnDestroy, AfterViewInit, ElementRef } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
+// import { Observable } from 'rxjs/Rx';
 import { Board } from '../board/board';
 import { Column } from '../column/column';
 import { Card } from '../card/card';
@@ -10,6 +10,7 @@ import { ColumnComponent } from '../column/column.component';
 import { OrderBy } from '../pipes/orderby.pipe';
 import { Where } from '../pipes/where.pipe';
 import { Router, Params, ActivatedRoute } from '@angular/router';
+import { HttpClientService } from 'app/httpclient';
 
 declare var jQuery: any;
 var curYPos = 0,
@@ -33,6 +34,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   constructor(public el: ElementRef,
     private _ws: WebSocketService,
     private _boardService: BoardService,
+    private _http: HttpClientService,
     private _columnService: ColumnService,
     private _router: Router,
     private _route: ActivatedRoute) {
@@ -55,15 +57,15 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     //let boardId = this._routeParams.get('id');
     this._boardService.getBoardWithColumnsAndCards(boardId)
-      .subscribe(data => {
-        console.log(`joining board ${boardId}`);
+      .subscribe((data: any) => {
+        console.log(`joining board ${boardId}`, data);
         this._ws.join(boardId);
-    
+
         this.board = data[0];
         this.board.columns = data[1];
         this.board.cards = data[2];
         document.title = this.board.title + " | Generic Task Manager";
-        this.setupView();        
+        this.setupView();
       });
   }
 
@@ -117,9 +119,10 @@ export class BoardComponent implements OnInit, OnDestroy {
     });
 
     el.addEventListener('mousedown', function (e) {
-      if (e.srcElement.id === 'main' || e.srcElement.id === 'content-wrapper') {
-        curDown = true;
-      }
+      console.log(e)
+      // if (e.srcElement.id === 'main' || e.srcElement.id === 'content-wrapper') {
+      //   curDown = true;
+      // }
       curYPos = e.pageY; curXPos = e.pageX;
     });
     el.addEventListener('mouseup', function (e) {
@@ -236,9 +239,9 @@ export class BoardComponent implements OnInit, OnDestroy {
       boardId: this.board._id
     };
     this._columnService.post(newColumn)
-      .subscribe(column => {
+      .subscribe((column: any) => {
         this.board.columns.push(column)
-        console.log('column added');
+        console.log('column added', column);
         this.updateBoardWidth();
         this.addColumnText = '';
         this._ws.addColumn(this.board._id, column);

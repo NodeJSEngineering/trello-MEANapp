@@ -3,6 +3,7 @@ import {Card} from './card';
 import {Column} from '../column/column';
 import {CardService} from './card.service';
 import {WebSocketService} from '../ws.service';
+import { HttpClientService } from 'app/httpclient';
 
 @Component({
   selector: 'gtm-card',
@@ -19,7 +20,9 @@ export class CardComponent implements OnInit {
   constructor(private el: ElementRef,
     private _ref: ChangeDetectorRef,
     private _ws: WebSocketService,
-    private _cardService: CardService) {
+    private _cardService: CardService,
+    private _http: HttpClientService
+    ) {
     this.zone = new NgZone({ enableLongStackTrace: false });
     this.cardUpdate = new EventEmitter();
   }

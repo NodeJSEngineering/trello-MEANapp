@@ -1,23 +1,22 @@
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
-import {HttpClient} from '../httpclient';
+// import {Http} from '@angular/http';
+import {HttpClientService} from '../httpclient';
 import {Card} from '../card/card';
+import { map } from 'rxjs';
 
 @Injectable()
 export class CardService {
   apiUrl = '/card';
 
-  constructor(private _http: HttpClient) {
+  constructor(private _http: HttpClientService) {
   }
 
   getAll() {
-    return this._http.get(this.apiUrl)
-      .map(res => res.json());
+    return this._http.get(this.apiUrl).pipe(map(res => {return res}));
   }
 
   get(id: string) {
-    return this._http.get(this.apiUrl + '/' + id)
-      .map(res => res.json());
+    return this._http.get(this.apiUrl + '/' + id).pipe(map(res => res));
   }
 
   put(card: Card) {
@@ -26,8 +25,7 @@ export class CardService {
   }
 
   post(card: Card) {
-    return this._http.post(this.apiUrl, JSON.stringify(card))
-      .map(res => <Card>res.json().data);
+    return this._http.post(this.apiUrl, JSON.stringify(card)).pipe(map(res => res));
   }
 
   delete(card: Card) {

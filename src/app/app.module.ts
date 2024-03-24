@@ -1,14 +1,16 @@
 // DEPENDENCIES
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+// import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
+
 import { RouterModule, Routes } from '@angular/router';
 // PROVIDERS
 import { BoardService } from './board/board.service';
 import { CardService } from './card/card.service';
 import { ColumnService } from './column/column.service';
-import { HttpClient } from './httpclient';
+import { HttpClientService } from './httpclient';
 import { WebSocketService } from './ws.service';
 
 // COMPONENTS
@@ -39,11 +41,12 @@ const appRoutes: Routes = [
   ],
   imports: [
     BrowserModule,
+    ReactiveFormsModule,
     FormsModule,
-    HttpModule,
+    HttpClientModule,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [HttpClient, WebSocketService, BoardService, ColumnService, CardService],
+  providers: [HttpClientService, WebSocketService, BoardService, ColumnService, CardService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -22,10 +22,12 @@ module.exports = function(app) {
     app.get('/board', function (req, res) {
         log('GET /board');
         Board.find(function(err, boards) {
+          console.log(err,boards )
             if (err) {
                 res.json({info: 'error during find boards', error: err});
-            };
+            } else {
             res.json({info: 'boards found successfully', data: boards});
+            }
         });
     });
 

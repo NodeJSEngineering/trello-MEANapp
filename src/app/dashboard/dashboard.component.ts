@@ -27,9 +27,10 @@ export class DashboardComponent implements OnInit {
   public addBoard(){
     console.log('Adding new board');
     this._bs.post(<Board>{ title: "New board" })
-      .subscribe((board: Board) => {
+      .subscribe((board: any) => {
+
         this._router.navigate(['/b', board._id]);
-        console.log('new board added');
+        console.log('new board added', board);
     });
   }
 

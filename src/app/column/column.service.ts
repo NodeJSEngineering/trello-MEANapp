@@ -1,30 +1,32 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, RequestOptionsArgs} from '@angular/http';
-import {HttpClient} from '../httpclient'
+// import {Http, Headers, RequestOptionsArgs} from '@angular/http';
+import {HttpClientService} from '../httpclient'
 import {Column} from '../column/column';
 import {Card} from '../card/card';
+import { map } from 'rxjs';
 
 
 @Injectable()
 export class ColumnService {
   apiUrl = '/column';
 
-  constructor(private _http: HttpClient) {
+  constructor(private _http: HttpClientService) {
   }
 
   getAll() {
-    return this._http.get(this.apiUrl)
-      .map(res => <Column[]>res.json().data);
+    // return this._http.get(this.apiUrl)
+    //   .map(res => <Column[]>res.json().data);
+
+    return this._http.get(this.apiUrl).pipe(map(res =>{return res}))
   }
 
   get(id: string) {
-    return this._http.get(this.apiUrl + '/' + id)
-      .map(res => <Column>res.json().data);
+    return this._http.get(this.apiUrl + '/' + id).pipe(
+      map(res => res));
   }
 
   getCards(id: string) {
-    return this._http.get(this.apiUrl + '/' + id + '/cards')
-      .map(res => <Card[]>res.json().data);
+    return this._http.get(this.apiUrl + '/' + id + '/cards').pipe(map(res =>res));
   }
 
   put(column: Column) {
@@ -34,8 +36,7 @@ export class ColumnService {
   }
 
   post(column: Column) {;
-    return this._http.post(this.apiUrl, JSON.stringify(column))
-      .map(res => <Column>res.json().data);
+    return this._http.post(this.apiUrl, JSON.stringify(column)).pipe(map(res =>{return res}));
   }
 
   delete(column: Column) {

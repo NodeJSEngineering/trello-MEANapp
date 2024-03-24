@@ -7,6 +7,7 @@ import {WebSocketService} from '../ws.service';
 import {CardService} from '../card/card.service';
 import {OrderBy} from '../pipes/orderby.pipe';
 import {Where} from '../pipes/where.pipe';
+import { HttpClientService } from 'app/httpclient';
 
 declare var jQuery: any;
 
@@ -32,6 +33,7 @@ export class ColumnComponent implements OnInit {
   constructor(private el: ElementRef,
     private _ws: WebSocketService,
     private _columnService: ColumnService,
+    private _http: HttpClientService,
     private _cardService: CardService) {
     this.onAddCard = new EventEmitter();
     this.cardUpdate = new EventEmitter();
@@ -138,7 +140,7 @@ export class ColumnComponent implements OnInit {
       boardId: this.column.boardId
     };
     this._cardService.post(newCard)
-      .subscribe(card => {
+      .subscribe((card: any) => {
         this.onAddCard.emit(card);
         this._ws.addCard(card.boardId, card);
       });

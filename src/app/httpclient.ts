@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers, RequestOptionsArgs } from '@angular/http';
+// import { Http, Response, Headers, RequestOptionsArgs } from '@angular/http';
+// import { Http, Response, Headers, RequestOptionsArgs } from '@angular/common/http';
+
 import { ROOT_URL } from './constants'
+import { HttpClient } from '@angular/common/http';
+import { Board } from './board/board';
 
 @Injectable()
-export class HttpClient {
+export class HttpClientService {
   headers: Headers;
-  options: RequestOptionsArgs;
+  options: any;
   rootUrl: String = ROOT_URL;
 
-  constructor(private _http: Http) {
+  constructor(private _http: HttpClient) {
     this.headers = new Headers();
 
     this.headers.append('Content-Type', 'application/json');
@@ -16,22 +20,22 @@ export class HttpClient {
     this.options = { headers: this.headers }
   }
 
-  public get(url: string, options?: RequestOptionsArgs) {
+  public get(url: string, options?: any) {
     url = this.handleUrl(url);
     return this._http.get(url, options || this.options);
   }
 
-  public post(url: string, body: string, options?: RequestOptionsArgs) {
+  public post(url: string, body: string, options?: any) {
     url = this.handleUrl(url);
-    return this._http.post(url, body, options || this.options);
+    return this._http.post<Board>(url, body, options || this.options);
   }
 
-  public put(url: string, body: string, options?: RequestOptionsArgs) {
+  public put(url: string, body: string, options?: any) {
     url = this.handleUrl(url);
     return this._http.put(url, body, options || this.options);
   }
 
-  public delete(url: string, options?: RequestOptionsArgs) {
+  public delete(url: string, options?: any) {
     url = this.handleUrl(url);
     return this._http.delete(url, options || this.options);
   }
@@ -47,5 +51,7 @@ export class HttpClient {
   private checkUrlExternal(url: string): boolean {
     return /^(?:[a-z]+:)?\/\//i.test(url);
   }
+
+
 
 }
