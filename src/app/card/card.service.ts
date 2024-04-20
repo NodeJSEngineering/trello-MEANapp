@@ -1,15 +1,36 @@
 import {Injectable} from '@angular/core';
-// import {Http} from '@angular/http';
-import {HttpClientService} from '../httpclient';
-import {Card} from '../card/card';
-import { map } from 'rxjs';
-
+import { map } from 'rxjs/operators';
+import { ApiService } from '../api.service';
+import { HttpClient } from '@angular/common/http';
+import { Card } from './card';
 @Injectable()
-export class CardService {
+// extends ApiService
+export class CardService  {
   apiUrl = '/card';
 
-  constructor(private _http: HttpClientService) {
+  constructor(public _http: HttpClient) {
+    // super(_http)
   }
+
+  // getAllUsers() {
+  //   return this.getService('listusers').pipe(map(res => res));
+  // }
+
+  // deleteTask(taskId) {
+  //   return this.postService('delete', taskId).pipe(
+  //     map(res => res));
+  // }
+
+  // postCard(card) {
+  //   return this.postService('create', (card)).pipe(
+  //     map(res => res));
+  // }
+
+  // updateCard(card) {
+  //   return this.postService('update', (card)).pipe(
+  //     map(res => res));
+  // }
+
 
   getAll() {
     return this._http.get(this.apiUrl).pipe(map(res => {return res}));
@@ -32,5 +53,4 @@ export class CardService {
     return this._http.delete(this.apiUrl + '/' + card._id)
       .toPromise();
   }
-
 }

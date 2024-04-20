@@ -1,9 +1,10 @@
-import {Card} from '../card/card';
+import { Card } from '../card/card';
 
 export class Column {
-	  _id: string;
+    _id?: string;
+    id?: number;
     title: string;
     boardId: string;
     order: number;
-    //cards: Card[];
+    cards?: Card[];
 }

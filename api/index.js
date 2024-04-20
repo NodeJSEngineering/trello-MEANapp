@@ -7,11 +7,11 @@ var app = express();
 var mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
-
+// mongodb://127.0.0.1/yourdb
 // mongoose.connect('mongodb://localhost/gtm');
-mongoose.connect('mongodb://127.0.0.1:3001/gtm', {useNewUrlParser: true})
+mongoose.connect('mongodb://127.0.0.1/gtm', {useNewUrlParser: true})
 .then(() => console.log('connected to mongoDB'))
-.catch(err => console.log('could not connect')) 
+.catch(err => console.log('could not connect'))
 
 app.use(cors());
 app.use(morgan('dev'));

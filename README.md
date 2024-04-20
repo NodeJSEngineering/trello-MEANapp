@@ -20,7 +20,7 @@ I'm Sam, and I'm passionate about product engineering and web development. I cre
 
 
 ### About the app
-Generic Task creator or Manager app. It is kind of trello clone with limited functionality
+Generic Task creator or Manager app. It is kind of trello clone with limited functionality.
 
 ### Packages used
 -     socket.io-client

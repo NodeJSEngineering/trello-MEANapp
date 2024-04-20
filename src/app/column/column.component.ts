@@ -1,28 +1,25 @@
 import {Component, Input, Output, OnInit, AfterViewInit, EventEmitter, ElementRef} from '@angular/core';
 import {Column} from './column';
 import {Card} from '../card/card';
-import {CardComponent} from '../card/card.component'
-import {ColumnService} from './column.service';
-import {WebSocketService} from '../ws.service';
 import {CardService} from '../card/card.service';
-import {OrderBy} from '../pipes/orderby.pipe';
-import {Where} from '../pipes/where.pipe';
+import { BoardService } from '../board/board.service';
+import { CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import { WebSocketService } from 'app/ws.service';
+import { ColumnService } from './column.service';
 import { HttpClientService } from 'app/httpclient';
-
 declare var jQuery: any;
 
 @Component({
-  selector: 'gtm-column',
+  selector: 'app-gtm-column',
   templateUrl: './column.component.html',
   styleUrls: ['./column.component.css'],
 })
 export class ColumnComponent implements OnInit {
-  @Input()
-  column: Column;
-  @Input()
-  cards: Card[];
-  @Output()
-  public onAddCard: EventEmitter<Card>;
+  @Input() column: Column;
+  @Input() cards: Card[];
+  @Input() userList;
+
+  @Output() addNewCard: EventEmitter<Card>;
   @Output() cardUpdate: EventEmitter<Card>;
 
   editingColumn = false;
@@ -30,12 +27,15 @@ export class ColumnComponent implements OnInit {
   addCardText: string;
   currentTitle: string;
 
+
   constructor(private el: ElementRef,
-    private _ws: WebSocketService,
+    // private _cards?: CardService,
+     private _board: BoardService,
+     private _ws: WebSocketService,
     private _columnService: ColumnService,
     private _http: HttpClientService,
     private _cardService: CardService) {
-    this.onAddCard = new EventEmitter();
+    this.addNewCard = new EventEmitter();
     this.cardUpdate = new EventEmitter();
   }
 
@@ -47,6 +47,8 @@ export class ColumnComponent implements OnInit {
         this.column.order = column.order;
       }
     });
+    console.log(this, 'column comp');
+
   }
 
   setupView() {
@@ -123,7 +125,11 @@ export class ColumnComponent implements OnInit {
     }
   }
 
-  addColumnOnEnter(event: KeyboardEvent) {
+
+  drop(event) {
+    moveItemInArray(this.cards, event.previousIndex, event.currentIndex);
+  }
+  addColumnOnEnter(event) {
     if (event.keyCode === 13) {
       this.updateColumn();
     } else if (event.keyCode === 27) {
@@ -133,20 +139,40 @@ export class ColumnComponent implements OnInit {
 
   addCard() {
     this.cards = this.cards || [];
-    let newCard = <Card>{
-      title: this.addCardText,
+    const newCard = <Card>{
+      message: this.addCardText,
       order: (this.cards.length + 1) * 1000,
       columnId: this.column._id,
-      boardId: this.column.boardId
+      boardId: this.column.boardId,
+      priority: '0',
+      due_date: new Date().toISOString().
+      replace(/T/, ' ').
+      replace(/\..+/, ''),
+      assigned_to: '1'
     };
+
+      const formData: FormData = new FormData();
+      formData.append('message', newCard.message);
+      formData.append('due_date', newCard.due_date);
+      formData.append('priority', newCard.priority);
+      formData.append('assigned_to', newCard.assigned_to);
+    //   this._cards.postCard(formData).subscribe((res) => {
+    //     if (res['status'] === 'success') {
+    //       newCard['id'] = res['taskid'];
+    //       this.addNewCard.emit(newCard);
+    //       alert('Task Added Successfully');
+    //     }
+    //  });
     this._cardService.post(newCard)
       .subscribe((card: any) => {
-        this.onAddCard.emit(card);
+        this.addNewCard.emit(card);
         this._ws.addCard(card.boardId, card);
       });
+
+
   }
 
-  addCardOnEnter(event: KeyboardEvent) {
+  addCardOnEnter(event) {
     if (event.keyCode === 13) {
       if (this.addCardText && this.addCardText.trim() !== '') {
         this.addCard();
@@ -178,7 +204,7 @@ export class ColumnComponent implements OnInit {
   editColumn() {
     this.currentTitle = this.column.title;
     this.editingColumn = true;
-    let input = this.el.nativeElement
+    const input = this.el.nativeElement
       .getElementsByClassName('column-header')[0]
       .getElementsByTagName('input')[0];
 
@@ -187,7 +213,7 @@ export class ColumnComponent implements OnInit {
 
   enableAddCard() {
     this.addingCard = true;
-    let input = this.el.nativeElement
+    const input = this.el.nativeElement
       .getElementsByClassName('add-card')[0]
       .getElementsByTagName('input')[0];
 
@@ -217,7 +243,7 @@ export class ColumnComponent implements OnInit {
     this.addCardText = '';
   }
 
-  onCardUpdate(card: Card){
+  onCardUpdate(card: Card) {
     this.cardUpdate.emit(card);
   }
 }

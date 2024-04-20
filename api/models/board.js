@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
-console.log('inializing Schema');
+console.log('initializing Schema');
 var boardSchema = mongoose.Schema({
     title: String
 });

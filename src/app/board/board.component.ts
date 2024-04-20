@@ -1,16 +1,14 @@
 import { Component, Input, OnInit, OnDestroy, AfterViewInit, ElementRef } from '@angular/core';
-// import { Observable } from 'rxjs/Rx';
 import { Board } from '../board/board';
 import { Column } from '../column/column';
 import { Card } from '../card/card';
 import { BoardService } from './board.service';
-import { ColumnService } from '../column/column.service';
-import { WebSocketService } from '../ws.service';
-import { ColumnComponent } from '../column/column.component';
-import { OrderBy } from '../pipes/orderby.pipe';
-import { Where } from '../pipes/where.pipe';
 import { Router, Params, ActivatedRoute } from '@angular/router';
+import { CardService } from '../card/card.service';
+import { WebSocketService } from 'app/ws.service';
 import { HttpClientService } from 'app/httpclient';
+import { ColumnService } from 'app/column/column.service';
+import { MockBoardService } from './mock_board.service';
 
 declare var jQuery: any;
 var curYPos = 0,
@@ -18,20 +16,30 @@ var curYPos = 0,
   curDown = false;
 
 @Component({
-  selector: 'gtm-board',
+  selector: 'app-gtm-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent implements OnInit, OnDestroy {
-  board: Board;
+  board: Board = this._mockboard.getBoards()[0];
   addingColumn = false;
   addColumnText: string;
   editingTilte = false;
   currentTitle: string;
   boardWidth: number;
-  columnsAdded: number = 0;
+  columnsAdded = 0;
+  searchText = '';
+  selectedData = '0';
+  options = [
+    { name: 'Task Priority', value: '0', checked: true },
+    { name: 'high', value: '1', checked: true },
+    { name: 'medium', value: '2', checked: false },
+    { name: 'low', value: '3', checked: true }
+  ];
 
   constructor(public el: ElementRef,
+    private _mockboard: MockBoardService,
+    private _cards: CardService,
     private _ws: WebSocketService,
     private _boardService: BoardService,
     private _http: HttpClientService,
@@ -61,22 +69,50 @@ export class BoardComponent implements OnInit, OnDestroy {
         console.log(`joining board ${boardId}`, data);
         this._ws.join(boardId);
 
-        this.board = data[0];
-        this.board.columns = data[1];
-        this.board.cards = data[2];
-        document.title = this.board.title + " | Generic Task Manager";
+        // this.board = data[0];
+        // this.board.columns = data[1].data;
+        // this.board.cards = data[2].data;
+        // document.title = this.board.title + " | Generic Task Manager";
         this.setupView();
       });
+    // this._board.refreshcard.subscribe((res) => {
+    //   if (res === 'deleteCard') {
+    //     this.getData();
+    //   } else {
+    //     this.getData();
+    //   }
+    // });
+
+console.log(this, 'board comp');
   }
 
-  ngOnDestroy(){
-    console.log(`leaving board ${this.board._id}`);
-    this._ws.leave(this.board._id);
-  }
+  // getData() {
+  //   this._board.getCards('').subscribe((res) => {
+  //     this.board = { title: 'Mini-Task Manager', _id: '1', columns: [], cards: [], userList: [] };
+
+  //     this.board.columns = [{
+  //       boardId: '5f8ed7a917c0456f389586a7',
+  //       order: 1000, title: 'Add tasks', _id: '1'
+  //     }];
+  //     if (this.searchText) {
+  //       this.board.cards = this.updateHtmlSearch(this.searchText, res['tasks'], 'message');
+  //     } else if (this.selectedData !== '0') {
+  //       this.board.cards = this.updateHtmlSearch(this.selectedData, res['tasks'], 'priority');
+  //     } else {
+  //       this.board.cards = res['tasks'];
+  //     }
+  //     this._cards.getAllUsers().subscribe((resp) => {
+  //       this.board.userList = resp['users'];
+  //     });
+  //     document.title = this.board.title + ' | Generic Task Manager';
+  //     this.setupView();
+  //   });
+  // }
 
   setupView() {
-    let component = this;
-    setTimeout(function () {
+    const component = this;
+    setTimeout(() => {
+
       var startColumn;
       jQuery('#main').sortable({
         items: '.sortable-column',
@@ -99,7 +135,6 @@ export class BoardComponent implements OnInit, OnDestroy {
       }).disableSelection();
 
       //component.bindPane();;
-
       window.addEventListener('resize', function (e) {
         component.updateBoardWidth();
       });
@@ -130,9 +165,17 @@ export class BoardComponent implements OnInit, OnDestroy {
     });
   }
 
+  updateHtmlSearch(searchText: string, tasks, key) {
+    const tempData = tasks;
+    tasks = tempData.filter(person =>
+      (person[key].toLowerCase().indexOf(searchText.toLowerCase()) > -1) === true ? person[key] : '');
+    return tasks;
+  }
+
   updateBoardWidth() {
     // this.boardWidth = ((this.board.columns.length + (this.columnsAdded > 0 ? 1 : 2)) * 280) + 10;
     this.boardWidth = ((this.board.columns.length + 1) * 280) + 10;
+if (document.getElementById('main')) {
 
     if (this.boardWidth > document.body.scrollWidth) {
       document.getElementById('main').style.width = this.boardWidth + 'px';
@@ -140,8 +183,9 @@ export class BoardComponent implements OnInit, OnDestroy {
       document.getElementById('main').style.width = '100%';
     }
 
+  }
     if (this.columnsAdded > 0) {
-      let wrapper = document.getElementById('content-wrapper');
+      const wrapper = document.getElementById('content-wrapper');
       wrapper.scrollLeft = wrapper.scrollWidth;
     }
 
@@ -155,19 +199,20 @@ export class BoardComponent implements OnInit, OnDestroy {
       this.board.title = this.currentTitle;
     }
     this.editingTilte = false;
-    document.title = this.board.title + " | Generic Task Manager";
+    document.title = this.board.title + ' | Generic Task Manager';
   }
 
   editTitle() {
     this.currentTitle = this.board.title;
     this.editingTilte = true;
 
-    let input = this.el.nativeElement
+    const input = this.el.nativeElement
       .getElementsByClassName('board-title')[0]
       .getElementsByTagName('input')[0];
 
     setTimeout(function () { input.focus(); }, 0);
   }
+
 
   updateColumnElements(column: Column) {
     let columnArr = jQuery('#main .column');
@@ -226,37 +271,43 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   enableAddColumn() {
     this.addingColumn = true;
-    let input = jQuery('.add-column')[0]
+    const input = document.querySelectorAll('.add-column')[0]
       .getElementsByTagName('input')[0];
 
     setTimeout(function () { input.focus(); }, 0);
+    alert(`Only 1 Column allowed in basic version To add more columns subscribe to
+    premium version`);
   }
 
   addColumn() {
-    let newColumn = <Column>{
+    const newColumn = <Column>{
       title: this.addColumnText,
       order: (this.board.columns.length + 1) * 1000,
       boardId: this.board._id
     };
+
+    // this.board.columns.push(newColumn);
+    // this.updateBoardWidth();
+    // this.addColumnText = '';
     this._columnService.post(newColumn)
-      .subscribe((column: any) => {
-        this.board.columns.push(column)
-        console.log('column added', column);
-        this.updateBoardWidth();
-        this.addColumnText = '';
-        this._ws.addColumn(this.board._id, column);
-      });
+    .subscribe((column: any) => {
+      this.board.columns.push(column)
+      console.log('column added', column);
+      this.updateBoardWidth();
+      this.addColumnText = '';
+      this._ws.addColumn(this.board._id, column);
+    });
+
   }
 
-  addColumnOnEnter(event: KeyboardEvent) {
+  addColumnOnEnter(event) {
     if (event.keyCode === 13) {
       if (this.addColumnText && this.addColumnText.trim() !== '') {
         this.addColumn();
       } else {
         this.clearAddColumn();
       }
-    }
-    else if (event.keyCode === 27) {
+    } else if (event.keyCode === 27) {
       this.clearAddColumn();
     }
   }
@@ -275,16 +326,23 @@ export class BoardComponent implements OnInit, OnDestroy {
 
 
   addCard(card: Card) {
+
     this.board.cards.push(card);
+
   }
 
   foreceUpdateCards() {
-    var cards = JSON.stringify(this.board.cards);
+    const cards = JSON.stringify(this.board.cards);
     this.board.cards = JSON.parse(cards);
   }
 
 
   onCardUpdate(card: Card) {
     this.foreceUpdateCards();
+  }
+
+  ngOnDestroy() {
+    console.log(`leaving board ${this.board._id}`);
+    this._ws.leave(this.board._id);
   }
 }

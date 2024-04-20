@@ -14,7 +14,6 @@ export class HttpClientService {
 
   constructor(private _http: HttpClient) {
     this.headers = new Headers();
-
     this.headers.append('Content-Type', 'application/json');
     this.headers.append('Accept', 'application/json');
     this.options = { headers: this.headers }
@@ -51,7 +50,5 @@ export class HttpClientService {
   private checkUrlExternal(url: string): boolean {
     return /^(?:[a-z]+:)?\/\//i.test(url);
   }
-
-
 
 }

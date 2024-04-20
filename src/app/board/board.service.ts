@@ -1,19 +1,29 @@
 import {Injectable} from '@angular/core';
-// import {Http, Response} from '@angular/http';
-// import {Observable} from 'rxjs/Rx';
-import {HttpClientService} from '../httpclient';
 import {Board} from '../board/board';
-import {Column} from '../column/column';
-import {Card} from '../card/card';
-import { Observable, forkJoin, map } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin } from 'rxjs';
+import { ApiService } from '../api.service';
+import { HttpClientService } from 'app/httpclient';
+// import { HttpClient } from '@angular/common/http';
 
 @Injectable()
-export class BoardService {
+// extends ApiService
+export class BoardService  {
   apiUrl = '/board';
   boardsCache: Board[] = [];
+  refreshcard  = new BehaviorSubject(<string>(''));
+  isLoading = new BehaviorSubject(false);
 
-  constructor(private _http: HttpClientService) {
+  constructor(public _http: HttpClientService){
+    // super(_http)
   }
+
+  // getCards() {
+  //   return this.getService('list').pipe(
+  //     map((res) => {
+  //     return res;
+  //    } ));
+  // }
 
   getAll(): any {
     return this._http.get(this.apiUrl).pipe(map((res) => {return res}));

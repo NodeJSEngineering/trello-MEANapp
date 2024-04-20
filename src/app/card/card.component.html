@@ -2,11 +2,26 @@
     [attr.card-id]="card._id"
     [attr.card-order]="card.order"
     (click)="editCard()">
-    <span [innerHtml]="card.title" [style.display]="editingCard ? 'none' : ''">
+    <span [innerHtml]="card.message" [style.display]="editingCard ? 'none' : ''">
     </span>
     <textarea
         [style.display]="editingCard ? '' : 'none' "
         (keydown)="blurOnEnter($event)"
         (blur)="updateCard()"
-        [(ngModel)]="card.title" ></textarea>
+        [(ngModel)]="card.message" ></textarea>
+
 </li>
+<p>{{card.due_date}}</p>
+<select name="" id=""  [(ngModel)]="card.assigned_to" (change)="updateCard()">
+    <option value="0">unassigned</option>
+    <option *ngFor="let user of this.userList" value="{{ user.id }}">
+        {{ user.name }}</option>
+</select>
+<select [(ngModel)]="card.priority" (change)="updateCard()">
+    <option value="0">select priority</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+
+</select>
+<button (click)="deleteCard()">delete</button>

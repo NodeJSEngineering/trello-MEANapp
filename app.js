@@ -7,7 +7,7 @@ var express = require('express')
     , router = express.Router()
     , log = require('./dev-logger.js')
     , cors = require('cors');
-    
+
 app.use(cors());
 
 var server = require('http').createServer(app);
@@ -39,7 +39,7 @@ router.get('/b/:id', function(req, res, next) {
 
 app.use('/', router);
 
-var mongoUri = process.env.MONGO_URI || 'mongodb://localhost/gtm';
+var mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1/gtm';
 
 console.log(mongoUri);
 var mongoose = require('mongoose');

@@ -1,6 +1,18 @@
 <div *ngIf="board" class="board-title">
   <span [style.display]="editingTilte ? 'none' : ''" (click)="editTitle()">{{ board?.title }}</span>
 
+<div>
+<input style="font-size: inherit;" type="text" class="update-input" placeholder="Search" [(ngModel)]="searchText" id="listSearch"
+> <button (click)="getData()" (keyup.enter)="getData()">Search</button>
+</div>
+
+<div>
+  <select [(ngModel)]="selectedData" (change)="getData()">
+<option *ngFor="let option of options" value="{{ option.value }}">
+  {{ option.name }}</option>
+  </select>
+
+</div>
   <input  
     [style.display]="editingTilte ? '' : 'none' "
     (keyup)="blurOnEnter($event)"
@@ -9,11 +21,12 @@
 </div>
 
 <section *ngIf="board" id="main" >
-  <div *ngFor="let column of board.columns | orderBy : 'order'" class="sortable-column">
-    <gtm-column [column]="column"
-        (onAddCard)="addCard($event)"
-        [cards]="board.cards">
-    </gtm-column>
+  <div *ngFor="let column of board.columns" class="sortable-column">
+    <app-gtm-column [column]="column"
+        (addNewCard)="addCard($event)"
+        [cards]="board.cards"
+        [userList]="board.userList">
+    </app-gtm-column>
   </div>
   <div class="add-column"
        (click)="enableAddColumn()" >

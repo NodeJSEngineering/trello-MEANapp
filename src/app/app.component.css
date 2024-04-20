@@ -61,3 +61,48 @@ nav a.logo{
   cursor: hand;
   text-decoration: none;
 }
+
+.background-blur {
+  background: rgba(0, 0, 0, .5);
+  position: fixed;
+  z-index: 999999;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  text-align: center;
+  justify-content: center;
+
+}
+
+
+.loader-div {
+  height: 8rem;
+  width: 8rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999999;
+}
+
+.loader {
+  border: 16px solid #b1bede;
+  /* Light grey */
+  border-top: 16px solid #3498db;
+  /* Blue */
+  border-radius: 50%;
+  width: 6rem;
+  height: 6rem;
+  animation: spin .5s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
