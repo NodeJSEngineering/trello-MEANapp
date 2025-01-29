@@ -21,6 +21,11 @@ I'm Sam, and I'm passionate about product engineering and web development. I cre
 
 ### About the app
 Generic Task creator or Manager app. It is kind of trello clone with limited functionality.
+Trello is a task management site. For any software project tasks, you can use this app. On this application, you can plan your tasks. By using this you can organize and prioritize everything that you need to be completed on time. It is very easy to use. Non-technical people can also handle this application.
+Here you can create boards, lists, and cards.
+It is available in both versions of the website and mobile app.
+You can connect the many members on each project.
+Push notifications, history threads and drag & drop file management
 
 ### Packages used
 -     socket.io-client
