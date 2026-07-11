@@ -23,8 +23,7 @@ I'm Sam, and I'm passionate about product engineering and web development. I cre
 Generic Task creator or Manager app. It is kind of trello clone with limited functionality.
 
 ### Endpoints created
-post board
-{'title':'board'}
+post http://localhost:3001/board  req. json body-> {"title":"demo"}
 
 get http://localhost:3001/board
 
@@ -39,7 +38,7 @@ put /board/:id   // Update board
 Delete board/:id
 
 ### Packages used
--    "morgan": "^1.7.0",
+
 
 ## Subscribe and Stay Updated!
 

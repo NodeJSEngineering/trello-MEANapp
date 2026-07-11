@@ -28,4 +28,4 @@ var server = app.listen(3001, function () {
     console.log('Server running at http://127.0.0.1:3001/');
 });
 
-var io = require('socket.io').listen(server);
+var io = require('socket.io')(server);
